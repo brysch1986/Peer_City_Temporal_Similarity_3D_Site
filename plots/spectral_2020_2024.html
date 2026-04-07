@@ -1,0 +1,15 @@
+from pathlib import Path
+import plotly.express as px
+
+out_dir = Path(r"D:\VSCODE\peer-city-3d-site\docs\plots")
+out_dir.mkdir(parents=True, exist_ok=True)
+
+fig = px.scatter_3d(
+    x=[1, 2, 3],
+    y=[2, 1, 4],
+    z=[3, 2, 1],
+    color=["A", "B", "A"],
+    hover_name=["Jacksonville", "Miami", "Tampa"],
+)
+
+fig.write_html(out_dir / "spectral_2020_2024.html", include_plotlyjs="cdn")
