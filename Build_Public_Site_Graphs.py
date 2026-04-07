@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -7,14 +8,14 @@ import plotly.graph_objects as go
 # INPUT / OUTPUT
 # =========================================================
 INPUT_CSV = Path(
-    r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site\plots\input\spectral_graph_data_2020_2024.csv"
+    r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site\plots\input\spectral_graph_data_2010_2014.csv"
 )
 
-OUT_DIR = Path(r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site\docs\plots")
+# This writes to the repo root, matching the file structure in your screenshot
+OUT_DIR = Path(r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-OUTPUT_HTML = OUT_DIR / "spectral_2020_2024.html"
-
+OUTPUT_HTML = OUT_DIR / "spectral_2010_2014.html"
 
 # =========================================================
 # COLORS
@@ -24,7 +25,6 @@ PALETTE = [
     "#17becf", "#8c564b", "#e377c2", "#bcbd22", "#7f7f7f"
 ]
 
-
 def cluster_color(cluster):
     if pd.isna(cluster):
         return "#888888"
@@ -33,6 +33,27 @@ def cluster_color(cluster):
         return "#888888"
     return PALETTE[c % len(PALETTE)]
 
+# =========================================================
+# LOG WEIGHT SCALING
+# Mirrors the old matplotlib idea:
+# - clip
+# - log10
+# - low-end clip at 10th percentile
+# - rescale to [0,1]
+# =========================================================
+def log_scale_weights(weights: np.ndarray) -> np.ndarray:
+    eps = 1e-9
+    w = np.clip(np.asarray(weights, dtype=float), eps, None)
+    lw = np.log10(w)
+
+    lo = np.percentile(lw, 10)
+    lw = np.clip(lw, lo, None)
+
+    lo2, hi2 = lw.min(), lw.max()
+    if hi2 > lo2:
+        return (lw - lo2) / (hi2 - lo2)
+
+    return np.ones_like(lw)
 
 # =========================================================
 # LOAD EDGE-BASED GRAPH CSV
@@ -68,26 +89,34 @@ nodes = pd.concat([source_nodes, target_nodes], ignore_index=True)
 nodes = nodes.drop_duplicates(subset=["label"]).reset_index(drop=True)
 
 # =========================================================
-# BUILD EDGE TRACE
+# BUILD EDGE TRACES
+# One trace per edge so opacity/width can vary by weight
 # =========================================================
-edge_x = []
-edge_y = []
-edge_z = []
+weights = df["weight"].to_numpy(dtype=float)
+w_scaled = log_scale_weights(weights)
 
-for _, row in df.iterrows():
-    edge_x += [row["source_x"], row["target_x"], None]
-    edge_y += [row["source_y"], row["target_y"], None]
-    edge_z += [row["source_z"], row["target_z"], None]
+edge_traces = []
 
-edge_trace = go.Scatter3d(
-    x=edge_x,
-    y=edge_y,
-    z=edge_z,
-    mode="lines",
-    line=dict(width=2, color="rgba(120,120,120,0.45)"),
-    hoverinfo="none",
-    showlegend=False,
-)
+for (_, row), ws in zip(df.iterrows(), w_scaled):
+    # Slightly stronger than the matplotlib version so it reads better on the webpage
+    alpha = 0.18 + 0.72 * ws
+    width = 0.8 + 3.0 * ws
+
+    edge_traces.append(
+        go.Scatter3d(
+            x=[row["source_x"], row["target_x"], None],
+            y=[row["source_y"], row["target_y"], None],
+            z=[row["source_z"], row["target_z"], None],
+            mode="lines",
+            line=dict(
+                width=width,
+                color=f"rgba(120,120,120,{alpha})"
+            ),
+            hoverinfo="text",
+            hovertext=f"Weight: {row['weight']:.4f}",
+            showlegend=False,
+        )
+    )
 
 # =========================================================
 # BUILD NODE TRACE
@@ -119,10 +148,10 @@ node_trace = go.Scatter3d(
 # =========================================================
 # FIGURE
 # =========================================================
-fig = go.Figure(data=[edge_trace, node_trace])
+fig = go.Figure(data=edge_traces + [node_trace])
 
 fig.update_layout(
-    title="Spectral Clustering Affinity Graph (3D)<br>2010–2014",
+    title="Spectral Clustering Affinity Graph (3D)<br>2020–2024",
     scene=dict(
         xaxis=dict(visible=False),
         yaxis=dict(visible=False),
