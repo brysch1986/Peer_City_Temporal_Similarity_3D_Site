@@ -99,8 +99,8 @@ edge_traces = []
 
 for (_, row), ws in zip(df.iterrows(), w_scaled):
     # Slightly stronger than the matplotlib version so it reads better on the webpage
-    alpha = 0.35 + 0.60 * ws   # range: 0.35 to 0.95
-    width = 1.5 + 4.0 * ws     # range: 1.5 to 5.5
+    alpha = 0.45 + 0.50 * ws
+    width = 2.0 + 4.5 * ws  
 
     edge_traces.append(
         go.Scatter3d(
