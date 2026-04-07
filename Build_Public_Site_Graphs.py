@@ -8,14 +8,14 @@ import plotly.graph_objects as go
 # INPUT / OUTPUT
 # =========================================================
 INPUT_CSV = Path(
-    r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site\plots\input\spectral_graph_data_2010_2014.csv"
+    r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site\plots\input\spectral_graph_data_2020_2024.csv"
 )
 
 # This writes to the repo root, matching the file structure in your screenshot
 OUT_DIR = Path(r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-OUTPUT_HTML = OUT_DIR / "spectral_2010_2014.html"
+OUTPUT_HTML = OUT_DIR / "spectral_2020_2024.html"
 
 # =========================================================
 # COLORS
@@ -99,8 +99,8 @@ edge_traces = []
 
 for (_, row), ws in zip(df.iterrows(), w_scaled):
     # Slightly stronger than the matplotlib version so it reads better on the webpage
-    alpha = 0.18 + 0.72 * ws
-    width = 0.8 + 3.0 * ws
+    alpha = 0.35 + 0.60 * ws   # range: 0.35 to 0.95
+    width = 1.5 + 4.0 * ws     # range: 1.5 to 5.5
 
     edge_traces.append(
         go.Scatter3d(
