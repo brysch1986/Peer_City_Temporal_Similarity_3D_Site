@@ -1,0 +1,137 @@
+from pathlib import Path
+
+import pandas as pd
+import plotly.graph_objects as go
+
+# =========================================================
+# INPUT / OUTPUT
+# =========================================================
+INPUT_CSV = Path(
+    r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site\plots\input\spectral_graph_data_2020_2024.csv"
+)
+
+OUT_DIR = Path(r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site\docs\plots")
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+OUTPUT_HTML = OUT_DIR / "spectral_2020_2024.html"
+
+
+# =========================================================
+# COLORS
+# =========================================================
+PALETTE = [
+    "#1f77b4", "#d62728", "#2ca02c", "#9467bd", "#ff7f0e",
+    "#17becf", "#8c564b", "#e377c2", "#bcbd22", "#7f7f7f"
+]
+
+
+def cluster_color(cluster):
+    if pd.isna(cluster):
+        return "#888888"
+    c = int(cluster)
+    if c == -1:
+        return "#888888"
+    return PALETTE[c % len(PALETTE)]
+
+
+# =========================================================
+# LOAD EDGE-BASED GRAPH CSV
+# Expected columns:
+# source_label, source_cluster, source_x, source_y, source_z,
+# target_label, target_cluster, target_x, target_y, target_z, weight
+# =========================================================
+df = pd.read_csv(INPUT_CSV)
+
+required_cols = {
+    "source_label", "source_cluster", "source_x", "source_y", "source_z",
+    "target_label", "target_cluster", "target_x", "target_y", "target_z",
+    "weight",
+}
+missing = required_cols - set(df.columns)
+if missing:
+    raise ValueError(f"Missing required columns in {INPUT_CSV.name}: {sorted(missing)}")
+
+# =========================================================
+# BUILD UNIQUE NODE TABLE
+# =========================================================
+source_nodes = df[
+    ["source_label", "source_cluster", "source_x", "source_y", "source_z"]
+].copy()
+source_nodes.columns = ["label", "cluster", "x", "y", "z"]
+
+target_nodes = df[
+    ["target_label", "target_cluster", "target_x", "target_y", "target_z"]
+].copy()
+target_nodes.columns = ["label", "cluster", "x", "y", "z"]
+
+nodes = pd.concat([source_nodes, target_nodes], ignore_index=True)
+nodes = nodes.drop_duplicates(subset=["label"]).reset_index(drop=True)
+
+# =========================================================
+# BUILD EDGE TRACE
+# =========================================================
+edge_x = []
+edge_y = []
+edge_z = []
+
+for _, row in df.iterrows():
+    edge_x += [row["source_x"], row["target_x"], None]
+    edge_y += [row["source_y"], row["target_y"], None]
+    edge_z += [row["source_z"], row["target_z"], None]
+
+edge_trace = go.Scatter3d(
+    x=edge_x,
+    y=edge_y,
+    z=edge_z,
+    mode="lines",
+    line=dict(width=2, color="rgba(120,120,120,0.45)"),
+    hoverinfo="none",
+    showlegend=False,
+)
+
+# =========================================================
+# BUILD NODE TRACE
+# =========================================================
+node_colors = [cluster_color(c) for c in nodes["cluster"]]
+
+hover_text = [
+    f"{row.label}<br>Cluster: {int(row.cluster)}"
+    for row in nodes.itertuples(index=False)
+]
+
+node_trace = go.Scatter3d(
+    x=nodes["x"],
+    y=nodes["y"],
+    z=nodes["z"],
+    mode="markers+text",
+    text=nodes["label"],
+    textposition="top center",
+    hovertext=hover_text,
+    hoverinfo="text",
+    marker=dict(
+        size=8,
+        color=node_colors,
+        line=dict(width=1, color="white"),
+    ),
+    showlegend=False,
+)
+
+# =========================================================
+# FIGURE
+# =========================================================
+fig = go.Figure(data=[edge_trace, node_trace])
+
+fig.update_layout(
+    title="Spectral Clustering Affinity Graph (3D)<br>2010–2014",
+    scene=dict(
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        zaxis=dict(visible=False),
+    ),
+    margin=dict(l=0, r=0, t=80, b=0),
+    paper_bgcolor="white",
+    plot_bgcolor="white",
+)
+
+fig.write_html(OUTPUT_HTML, include_plotlyjs="cdn", full_html=True)
+print(f"Saved: {OUTPUT_HTML}")
