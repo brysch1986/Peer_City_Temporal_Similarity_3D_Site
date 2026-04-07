@@ -119,7 +119,7 @@ for (_, row), ws in zip(df.iterrows(), w_scaled):
     )
 
 # =========================================================
-# BUILD NODE TRACE
+# BUILD NODE MARKER TRACE
 # =========================================================
 node_colors = [cluster_color(c) for c in nodes["cluster"]]
 
@@ -128,27 +128,69 @@ hover_text = [
     for row in nodes.itertuples(index=False)
 ]
 
-node_trace = go.Scatter3d(
+node_marker_trace = go.Scatter3d(
     x=nodes["x"],
     y=nodes["y"],
     z=nodes["z"],
-    mode="markers+text",
-    text=nodes["label"],
-    textposition="top center",
+    mode="markers",
     hovertext=hover_text,
     hoverinfo="text",
     marker=dict(
         size=8,
         color=node_colors,
-        line=dict(width=1, color="white"),
+        line=dict(width=1.2, color="white"),
     ),
+    showlegend=False,
+)
+
+# =========================================================
+# TEXT HALO TRACE (draw first)
+# =========================================================
+node_text_halo_trace = go.Scatter3d(
+    x=nodes["x"],
+    y=nodes["y"],
+    z=nodes["z"],
+    mode="text",
+    text=nodes["label"],
+    textposition="top center",
+    textfont=dict(
+        size=15,        # a bit larger than main text
+        color="white",
+        family="Arial Black, Arial, sans-serif",
+    ),
+    hoverinfo="skip",
+    showlegend=False,
+)
+
+# =========================================================
+# MAIN TEXT TRACE (draw on top)
+# =========================================================
+node_text_main_trace = go.Scatter3d(
+    x=nodes["x"],
+    y=nodes["y"],
+    z=nodes["z"],
+    mode="text",
+    text=nodes["label"],
+    textposition="top center",
+    textfont=dict(
+        size=11,
+        color="#1f2d4d",   # dark navy reads better than pure black
+        family="Arial, sans-serif",
+    ),
+    hoverinfo="skip",
     showlegend=False,
 )
 
 # =========================================================
 # FIGURE
 # =========================================================
-fig = go.Figure(data=edge_traces + [node_trace])
+fig = go.Figure(
+    data=edge_traces + [
+        node_marker_trace,
+        node_text_halo_trace,
+        node_text_main_trace,
+    ]
+)
 
 fig.update_layout(
     title="Spectral Clustering Affinity Graph (3D)<br>2020–2024",
