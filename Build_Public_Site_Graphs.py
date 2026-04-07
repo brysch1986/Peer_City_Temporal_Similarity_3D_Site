@@ -99,9 +99,9 @@ edge_traces = []
 
 for (_, row), ws in zip(df.iterrows(), w_scaled):
     # Slightly stronger than the matplotlib version so it reads better on the webpage
-    alpha = 0.45 + 0.50 * ws
-    width = 2.0 + 4.5 * ws  
-
+    alpha = 0.55 + 0.40 * ws
+    width = 2.2 + 4.5 * ws
+    color = f"rgba(50,50,50,{alpha})"
     edge_traces.append(
         go.Scatter3d(
             x=[row["source_x"], row["target_x"], None],
@@ -110,7 +110,7 @@ for (_, row), ws in zip(df.iterrows(), w_scaled):
             mode="lines",
             line=dict(
                 width=width,
-                color=f"rgba(120,120,120,{alpha})"
+                color=color,
             ),
             hoverinfo="text",
             hovertext=f"Weight: {row['weight']:.4f}",
