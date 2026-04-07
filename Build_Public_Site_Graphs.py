@@ -8,14 +8,14 @@ import plotly.graph_objects as go
 # INPUT / OUTPUT
 # =========================================================
 INPUT_CSV = Path(
-    r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site\plots\input\spectral_graph_data_2020_2024.csv"
+    r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site\plots\input\spectral_graph_data_2010_2014.csv"
 )
 
 # This writes to the repo root, matching the file structure in your screenshot
 OUT_DIR = Path(r"D:\VSCODE\Peer_City_Temporal_Similarity_3D_Site")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-OUTPUT_HTML = OUT_DIR / "spectral_2020_2024.html"
+OUTPUT_HTML = OUT_DIR / "spectral_2010_2014.html"
 
 # =========================================================
 # COLORS
@@ -99,8 +99,8 @@ edge_traces = []
 
 for (_, row), ws in zip(df.iterrows(), w_scaled):
     # Slightly stronger than the matplotlib version so it reads better on the webpage
-    alpha = 0.55 + 0.40 * ws
-    width = 2.2 + 4.5 * ws
+    alpha = 0.55 + 0.20 * ws
+    width = 2.2 + 2.5 * ws
     color = f"rgba(50,50,50,{alpha})"
     edge_traces.append(
         go.Scatter3d(
@@ -119,7 +119,7 @@ for (_, row), ws in zip(df.iterrows(), w_scaled):
     )
 
 # =========================================================
-# BUILD NODE MARKER TRACE
+# BUILD NODE TRACE
 # =========================================================
 node_colors = [cluster_color(c) for c in nodes["cluster"]]
 
@@ -128,69 +128,27 @@ hover_text = [
     for row in nodes.itertuples(index=False)
 ]
 
-node_marker_trace = go.Scatter3d(
+node_trace = go.Scatter3d(
     x=nodes["x"],
     y=nodes["y"],
     z=nodes["z"],
-    mode="markers",
+    mode="markers+text",
+    text=nodes["label"],
+    textposition="top center",
     hovertext=hover_text,
     hoverinfo="text",
     marker=dict(
         size=8,
         color=node_colors,
-        line=dict(width=1.2, color="white"),
+        line=dict(width=1, color="white"),
     ),
-    showlegend=False,
-)
-
-# =========================================================
-# TEXT HALO TRACE (draw first)
-# =========================================================
-node_text_halo_trace = go.Scatter3d(
-    x=nodes["x"],
-    y=nodes["y"],
-    z=nodes["z"],
-    mode="text",
-    text=nodes["label"],
-    textposition="top center",
-    textfont=dict(
-        size=15,        # a bit larger than main text
-        color="white",
-        family="Arial Black, Arial, sans-serif",
-    ),
-    hoverinfo="skip",
-    showlegend=False,
-)
-
-# =========================================================
-# MAIN TEXT TRACE (draw on top)
-# =========================================================
-node_text_main_trace = go.Scatter3d(
-    x=nodes["x"],
-    y=nodes["y"],
-    z=nodes["z"],
-    mode="text",
-    text=nodes["label"],
-    textposition="top center",
-    textfont=dict(
-        size=11,
-        color="#1f2d4d",   # dark navy reads better than pure black
-        family="Arial, sans-serif",
-    ),
-    hoverinfo="skip",
     showlegend=False,
 )
 
 # =========================================================
 # FIGURE
 # =========================================================
-fig = go.Figure(
-    data=edge_traces + [
-        node_marker_trace,
-        node_text_halo_trace,
-        node_text_main_trace,
-    ]
-)
+fig = go.Figure(data=edge_traces + [node_trace])
 
 fig.update_layout(
     title="Spectral Clustering Affinity Graph (3D)<br>2020–2024",
@@ -203,6 +161,6 @@ fig.update_layout(
     paper_bgcolor="white",
     plot_bgcolor="white",
 )
-
+fig.show()
 fig.write_html(OUTPUT_HTML, include_plotlyjs="cdn", full_html=True)
 print(f"Saved: {OUTPUT_HTML}")
