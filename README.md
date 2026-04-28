@@ -13,6 +13,12 @@ This repository is a companion visualization repo for the larger **Peer City Tem
 
 ---
 
+## Data Availability Notice
+
+The interactive site and related visual workflows in this repository are designed to work with project data, but the raw source data files are not hosted in this repository. Although the underlying indicators are drawn from public or publicly accessible sources, redistribution of the compiled raw project dataset is not included here. Users who want to regenerate the website outputs or Power BI visuals must obtain their own copies of the required source data and place them in the expected input locations described below.
+
+---
+
 This repo contains two independent but related things:
 
 1. **A hosted website** — interactive 3D Plotly graphs showing peer-city spectral clustering similarity across three five-year periods.
