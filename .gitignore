@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node.js (Power BI visual build dependencies)
+node_modules/
+
+# Power BI build artifacts
+.tmp/
+
+# OS
+.DS_Store
+Thumbs.db

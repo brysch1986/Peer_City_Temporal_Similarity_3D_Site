@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Peer City Spectral Graphs</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: #fff;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #toolbar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      border-bottom: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    #toolbar label {
+      font-size: 13px;
+      color: #333;
+    }
+
+    #periodSelect {
+      font-size: 13px;
+      padding: 3px 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-left: auto;
+      font-size: 12px;
+      color: #888;
+    }
+
+    /* graph div must have explicit height for Plotly to size correctly */
+    #graph {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toolbar">
+    <label for="periodSelect">Period:</label>
+    <select id="periodSelect">
+      <option value="2010_2014">2010&ndash;2014</option>
+      <option value="2015_2019">2015&ndash;2019</option>
+      <option value="2020_2024" selected>2020&ndash;2024</option>
+    </select>
+    <span id="status">Loading&hellip;</span>
+  </div>
+
+  <!-- Plotly renders directly here — no iframe -->
+  <div id="graph"></div>
+
+  <!--
+    Plotly.js — same CDN version used by the existing spectral HTML files.
+    Must load before app.js.
+  -->
+  <script src="https://cdn.plot.ly/plotly-3.4.0.min.js" charset="utf-8"></script>
+
+  <!--
+    Tableau Extensions API — loaded from Tableau's CDN.
+    app.js guards with `if (window.tableau && ...)` so the graph still renders
+    when opening this page directly in a browser for local testing.
+  -->
+  <script src="https://extensions.tableau.com/lib/tableau.extensions.1.latest.min.js"></script>
+
+  <script src="app.js"></script>
+
+</body>
+</html>

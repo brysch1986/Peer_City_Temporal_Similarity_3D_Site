@@ -1,0 +1,26 @@
+{
+    "visual": {
+        "name": "spectral3d",
+        "displayName": "Peer City Spectral 3D",
+        "guid": "spectral3dPeerCity7F3A2B1C9D4E5F6A",
+        "visualClassName": "Visual",
+        "version": "1.0.0.0",
+        "description": "Interactive 3D spectral clustering affinity graph for peer-city temporal analysis. Load a spectral edge-list CSV and map all columns to the visual.",
+        "supportUrl": "https://github.com/annehowell",
+        "gitHubUrl": ""
+    },
+    "apiVersion": "5.3.0",
+    "author": {
+        "name": "annehowell",
+        "email": "annehowell@users.noreply.github.com",
+        "website": "https://github.com/annehowell"
+    },
+    "assets": {
+        "icon": "assets/icon.png"
+    },
+    "capabilities": "capabilities.json",
+    "style": "style/visual.less",
+    "dependencies": "dependencies.json",
+    "externalJS": [],
+    "stringResources": []
+}

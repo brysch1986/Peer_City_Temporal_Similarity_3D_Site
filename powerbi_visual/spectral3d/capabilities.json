@@ -1,0 +1,23 @@
+{
+    "dataRoles": [
+        {
+            "displayName": "Edge List Columns",
+            "name": "edgeData",
+            "kind": "GroupingOrMeasure",
+            "description": "Add ALL columns from the spectral_graph_data CSV here: source_label, source_cluster, source_x, source_y, source_z, target_label, target_cluster, target_x, target_y, target_z, weight"
+        }
+    ],
+    "objects": {},
+    "dataViewMappings": [
+        {
+            "table": {
+                "rows": {
+                    "for": {
+                        "in": "edgeData"
+                    }
+                }
+            }
+        }
+    ],
+    "privileges": []
+}

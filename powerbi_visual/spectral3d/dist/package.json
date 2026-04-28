@@ -1,0 +1,17 @@
+{
+		"version": "1.0.0.0",
+		"author": {"name":"brysch1986","email":"brysch1986@users.noreply.github.com","website":"https://github.com/brysch1986"},
+		"resources": [
+			{
+				"resourceId": "rId0",
+				"sourceType": 5,
+				"file": "resources/spectral3dPeerCity7F3A2B1C9D4E5F6A.pbiviz.json"
+			}
+		],
+		"visual": {"name":"spectral3d","displayName":"Peer City Spectral 3D","guid":"spectral3dPeerCity7F3A2B1C9D4E5F6A","visualClassName":"Visual","version":"1.0.0.0","description":"Interactive 3D spectral clustering affinity graph for peer-city temporal analysis. Load a spectral edge-list CSV and map all columns to the visual.","supportUrl":"https://github.com/brysch1986","gitHubUrl":""},
+		"metadata": {
+			"pbivizjson": {
+				"resourceId": "rId0"
+			}
+		}
+	}
