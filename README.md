@@ -13,9 +13,6 @@ This repository is a companion visualization repo for the larger **Peer City Tem
 
 ---
 
-**Live site:** https://annehowell.github.io/Peer_City_Temporal_Similarity_3D_Site/
-*(URL is inferred from the GitHub username. If the site is not loading, confirm that GitHub Pages is enabled in the repository Settings → Pages, set to deploy from the `main` branch root.)*
-
 This repo contains two independent but related things:
 
 1. **A hosted website** — interactive 3D Plotly graphs showing peer-city spectral clustering similarity across three five-year periods.
